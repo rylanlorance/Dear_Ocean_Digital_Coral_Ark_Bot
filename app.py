@@ -25,9 +25,10 @@ if __name__ == "__main__":
                 filenames.append(filename)
 
         # beagle.filename_format_validator.validate_filename_format_for_one_file("000001_20170101_KEA_Roberts.Anka_SADDLE_RETICUL_TAGRL_ADDRL.jpg")
-        beagle.filename_format_validator.generate_filename_format_report_from_filenames(filenames)
+        # beagle.filename_format_validator.generate_filename_format_report_from_filenames(filenames)
 
         # print(vars(dakBot))
+        
 
         # my_file_rename_bot = FileRenameBot(config.INPUT_FILE_DIR, config.OUTPUT_FILE_DIR)
         # print(vars(my_file_rename_bot))
