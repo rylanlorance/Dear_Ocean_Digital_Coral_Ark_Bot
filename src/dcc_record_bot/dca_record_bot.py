@@ -5,10 +5,12 @@ import os
 import config
 import yaml
 from .apps.dca_record_filename_format_validator import DigiArkFilenameFormatValidator
+from .apps.filename_renamer_tool.filename_renamer_tool import DigitalCoralArkFileRenamerTool
 
 class DigitalCoralArkRecordBot():
 
     filename_format_validator = DigiArkFilenameFormatValidator()
+    # file_renamer_tool = DigitalCoralArkFileRenamerTool()
 
     def __init__(self, input_dir: str, output_dir)  -> None:
         self.input_dir = input_dir # add validation

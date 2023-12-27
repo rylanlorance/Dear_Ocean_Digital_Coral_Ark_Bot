@@ -159,4 +159,5 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+config.py
 src/dcc_record_bot/apps/filename_renamer_tool/filename_renamer_tool.yaml
