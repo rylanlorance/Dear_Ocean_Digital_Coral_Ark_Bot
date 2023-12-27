@@ -17,7 +17,6 @@ class DigitalCoralArkFileRenamerTool():
 
         with open('src/dcc_record_bot/apps/filename_renamer_tool/filename_renamer_tool.yaml') as f1:
             config = yaml.safe_load(f1)
-            print(config)
 
             if 'starting_image_id' not in config:
                 print("error, no image id generated")
@@ -34,10 +33,9 @@ class DigitalCoralArkFileRenamerTool():
         print('lets rename our files')
     
 
-        print(vars(self))
 
 
-    def extract_species_id_from_unformatted_file_name():
+    # def extract_species_id_from_unformatted_file_name():
         
 
         

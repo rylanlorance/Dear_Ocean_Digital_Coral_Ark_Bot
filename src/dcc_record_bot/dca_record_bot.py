@@ -7,8 +7,7 @@ import yaml
 from .apps.dca_record_filename_format_validator import DigiArkFilenameFormatValidator
 from .apps.filename_renamer_tool.filename_renamer_tool import DigitalCoralArkFileRenamerTool
 
-class DigitalCoralArkRecordBot():
-
+class DigitalCoralArkRecordBot():    
     filename_format_validator = DigiArkFilenameFormatValidator()
     # file_renamer_tool = DigitalCoralArkFileRenamerTool()
 

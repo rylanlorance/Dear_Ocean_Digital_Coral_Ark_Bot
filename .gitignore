@@ -161,3 +161,4 @@ cython_debug/
 
 config.py
 src/dcc_record_bot/apps/filename_renamer_tool/filename_renamer_tool.yaml
+src/dcc_record_bot/middleware/middleware_config.yaml

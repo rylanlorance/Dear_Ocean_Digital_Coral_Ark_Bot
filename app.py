@@ -5,6 +5,8 @@ from src.dcc_record_bot.apps.filename_renamer_tool.filename_renamer_tool import 
 # from file_rename_bot.file_rename_bot import FileRenameBot
 # from dak_archive_bot.dak_archive_bot import DigitalArkArchiveBot
 
+from src.dcc_record_bot.middleware.db_session import DCADatabaseSession
+
 if __name__ == "__main__":
     try:
         if not os.path.isdir(config.INPUT_FILE_DIR):
@@ -37,9 +39,15 @@ if __name__ == "__main__":
         # # validate filenames
         # my_file_rename_bot.super.validate_file_format()
 
+
+        ## initialize database
+        session = DCADatabaseSession()
+
         ## Rename a file
         file_renamer_tool = DigitalCoralArkFileRenamerTool(config.INPUT_FILE_DIR, config.OUTPUT_FILE_DIR)
         file_renamer_tool.test_rename_files()
+
+
 
     except FileNotFoundError:
         print("Input File not found", FileNotFoundError)
