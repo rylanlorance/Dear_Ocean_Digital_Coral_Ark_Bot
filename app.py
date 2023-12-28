@@ -42,6 +42,7 @@ if __name__ == "__main__":
 
         ## initialize database
         session = DCADatabaseSession()
+        session.generate_species_dict_keyed_by_species_id()
 
         ## Rename a file
         file_renamer_tool = DigitalCoralArkFileRenamerTool(config.INPUT_FILE_DIR, config.OUTPUT_FILE_DIR)
