@@ -48,8 +48,6 @@ if __name__ == "__main__":
         file_renamer_tool = DigitalCoralArkFileRenamerTool(config.INPUT_FILE_DIR, config.OUTPUT_FILE_DIR)
         file_renamer_tool.test_rename_files()
 
-
-
     except FileNotFoundError:
         print("Input File not found", FileNotFoundError)
 
