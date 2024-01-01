@@ -1,11 +1,12 @@
+import datetime
 from re import L
 from uu import Error
 import yaml 
 import os
 import re
+from datetime import datetime
 
 class DigitalCoralArkFileRenamerTool():
-
     species_common_name_dict = {
         "bluestripe_butterflyfish": {
             'species_common_name': 'bluestripe butterflyfish',
@@ -74,6 +75,8 @@ class DigitalCoralArkFileRenamerTool():
                         self.validate_raw_filename_before_rename_attempt(filename)
                         species_ids = self.extract_species_id_from_unformatted_file_name(filename)
                         print('species_ids', species_ids)
+                        record_dt = self.extract_record_datetime_from_unformatted_file_name(filename)
+
 
         except Exception as e:
             print('error', e)
@@ -83,6 +86,27 @@ class DigitalCoralArkFileRenamerTool():
         for illegal_string in illegal_strings:
             if illegal_string in filename:
                 raise Error("Filename cannot contain the value 'or', ignoring.")
+    
+    def extract_record_datetime_from_unformatted_file_name(self, filename):
+        file_name_parsed = re.split(r"\s|_|\.+", filename)
+        
+        ## find the datetime, which is most likely value with eight values and all numeric
+        potential_dt_field = 0
+
+        for field in file_name_parsed:
+            if len(field) == 8:
+                if field.isnumeric():
+                    potential_dt_field = field
+        
+        if not potential_dt_field:
+            raise ValueError("Error with filename: No datetime provided.")
+        
+        print('potential_dt_field', potential_dt_field)
+
+        if not bool(datetime.strptime(potential_dt_field, "%Y%m%d")):
+            raise ValueError("Filename Date Format Error: Must be in %y%m%d format.")
+
+        record_dt = datetime.strptime(potential_dt_field, "%Y%m%d")
 
     def extract_species_id_from_unformatted_file_name(self, filename):   
         species_ids = []
