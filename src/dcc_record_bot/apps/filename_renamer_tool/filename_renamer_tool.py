@@ -63,6 +63,11 @@ class DigitalCoralArkFileRenamerTool():
 
         # self.config = yaml.safe_load(open("filename_renamer_tool.yaml"))
     
+    def rename_files(self):
+        if not self.test_rename_files():
+            print("Error. Cannot copy files. Test rename failed. ")
+
+
     def test_rename_files(self):
         print(f"""Testing files for the Digital Coral Ark File Renamer Tool
 reading from directory: [{self.input_dir}]
