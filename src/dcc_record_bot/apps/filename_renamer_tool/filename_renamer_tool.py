@@ -64,22 +64,34 @@ class DigitalCoralArkFileRenamerTool():
         # self.config = yaml.safe_load(open("filename_renamer_tool.yaml"))
     
     def test_rename_files(self):
-        print('lets rename our files')
-        
-        try: 
-            for filename in os.listdir(self.input_dir):
+        print(f"""Testing files for the Digital Coral Ark File Renamer Tool
+reading from directory: [{self.input_dir}]
+            """)
+        errors = 0
+
+        for filename in os.listdir(self.input_dir):
+            print(f"Testing File...[{filename}]")
+            try:
                 f = os.path.join(self.input_dir, filename)   
                 if os.path.isfile(f):
-
                     if not self.config['contains_correct_species_id']:
                         self.validate_raw_filename_before_rename_attempt(filename)
                         species_ids = self.extract_species_id_from_unformatted_file_name(filename)
                         print('species_ids', species_ids)
                         record_dt = self.extract_record_datetime_from_unformatted_file_name(filename)
+                        print(u'\u2713')
 
 
-        except Exception as e:
-            print('error', e)
+            except Exception as e:
+                print("Error: File not valid for Filename Renamer Tool.")
+                print(e)
+                errors+=1
+        
+        if errors > 0:
+            return False
+        
+        else:
+            return True
 
     def validate_raw_filename_before_rename_attempt(self, filename):
         illegal_strings = ['or'] # certain strings prevent file renamer tool from working
@@ -101,8 +113,6 @@ class DigitalCoralArkFileRenamerTool():
         if not potential_dt_field:
             raise ValueError("Error with filename: No datetime provided.")
         
-        print('potential_dt_field', potential_dt_field)
-
         if not bool(datetime.strptime(potential_dt_field, "%Y%m%d")):
             raise ValueError("Filename Date Format Error: Must be in %y%m%d format.")
 
@@ -125,12 +135,11 @@ class DigitalCoralArkFileRenamerTool():
                 species_common_names.append(filename_species_2_common_name)
 
             for species_common_name in species_common_names:
-                print('species common name', species_common_name)
                 if species_common_name in self.species_common_name_dict:
                     species_id = self.species_common_name_dict[species_common_name]['species_id']
                     species_ids.append(species_id)
                 else:
-                    raise KeyError("Error: Species Common Name not found in species_dict. ")
+                    raise KeyError(f"Error: Species Common Name not found in species_dict. Incorrect File: [{filename}]")
      
         else:
             print("error! check config file.s")
@@ -138,9 +147,4 @@ class DigitalCoralArkFileRenamerTool():
 
         return species_ids
         
-        
-
-        
-        
-
         
