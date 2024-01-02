@@ -5,6 +5,8 @@ import yaml
 import os
 import re
 from datetime import datetime
+import pathlib
+import shutil
 
 class DigitalCoralArkFileRenamerTool():
     species_common_name_dict = {
@@ -47,10 +49,11 @@ class DigitalCoralArkFileRenamerTool():
         self.default_user_id = None
         self.default_species_id_1 = None
         self.default_species_id_2 = None
-        self.default_tagger = None
+        self.default_tagger_id = None
 
         with open('src/dcc_record_bot/apps/filename_renamer_tool/filename_renamer_tool.yaml') as f1:
             self.config = yaml.safe_load(f1)
+            print(self.config)
 
             if 'starting_image_id' not in self.config:
                 print("error, no image id generated")
@@ -59,13 +62,61 @@ class DigitalCoralArkFileRenamerTool():
                 self.default_location_id = self.config['location_id']
             
             if self.config['user_id'] != "":
-                self.default_location_id = self.config['user_id']
+                self.default_user_id = self.config['user_id']
+            
+            if self.config['tagger_id'] != "":
+                self.default_tagger_id = self.config['tagger_id']
 
         # self.config = yaml.safe_load(open("filename_renamer_tool.yaml"))
     
     def rename_files(self):
         if not self.test_rename_files():
             print("Error. Cannot copy files. Test rename failed. ")
+            exit(-1)
+            
+        else:
+            print("Test Rename Completed Successfully...continuing with rename")
+        
+        ctr = self.config['starting_image_id']
+
+        for filename_1 in os.listdir(self.input_dir):
+            f_1 = os.path.join(self.input_dir, filename_1)   
+            if os.path.isfile(f_1):
+                filename_1_extension = pathlib.Path(f_1).suffix
+
+                self.validate_raw_filename_before_rename_attempt(filename_1)
+                species_ids = self.extract_species_id_from_unformatted_file_name(filename_1)
+                record_dt = self.extract_record_datetime_from_unformatted_file_name(filename_1)
+
+
+                ## create a new file string
+                filename_2_record_id =  '{:>06d}'.format(ctr)
+                filename_2_datetime =  record_dt.strftime("%Y%m%d")
+                filename_2_loc_id = self.default_location_id
+
+                filename_2 = filename_2_record_id + '_' 
+                filename_2 += filename_2_datetime + '_'
+                filename_2 += filename_2_loc_id + "_"
+
+                if len(species_ids) == 1:
+                    filename_2 += species_ids[0] + "_"
+                    filename_2 += '0000000' + "_"
+                
+                else:   
+                    filename_2 += species_ids[0] + "_"
+                    filename_2 += species_ids[1] + "_"
+
+                filename_2 += f"TAG{self.default_tagger_id}"
+
+                filename_2 += filename_1_extension
+            
+                f_2 = os.path.join(self.output_dir, filename_2)   
+
+                print('f2', f_2)
+
+                shutil.copyfile(f_1, f_2)
+
+                ctr+=1
 
 
     def test_rename_files(self):
@@ -81,9 +132,8 @@ reading from directory: [{self.input_dir}]
                 if os.path.isfile(f):
                     if not self.config['contains_correct_species_id']:
                         self.validate_raw_filename_before_rename_attempt(filename)
-                        species_ids = self.extract_species_id_from_unformatted_file_name(filename)
-                        print('species_ids', species_ids)
-                        record_dt = self.extract_record_datetime_from_unformatted_file_name(filename)
+                        self.extract_species_id_from_unformatted_file_name(filename)
+                        self.extract_record_datetime_from_unformatted_file_name(filename)
                         print(u'\u2713')
 
 
@@ -96,6 +146,7 @@ reading from directory: [{self.input_dir}]
             return False
         
         else:
+            print("Test Complete!")
             return True
 
     def validate_raw_filename_before_rename_attempt(self, filename):
@@ -121,7 +172,7 @@ reading from directory: [{self.input_dir}]
         if not bool(datetime.strptime(potential_dt_field, "%Y%m%d")):
             raise ValueError("Filename Date Format Error: Must be in %y%m%d format.")
 
-        record_dt = datetime.strptime(potential_dt_field, "%Y%m%d")
+        return datetime.strptime(potential_dt_field, "%Y%m%d")
 
     def extract_species_id_from_unformatted_file_name(self, filename):   
         species_ids = []
