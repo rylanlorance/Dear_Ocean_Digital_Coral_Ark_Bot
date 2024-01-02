@@ -1,55 +1,38 @@
 import os
+
+from apps.filename_renamer_tool.filename_renamer_tool import FileRenameTool
 import config
-from src.dcc_record_bot.dca_record_bot import DigitalCoralArkRecordBot
-from src.dcc_record_bot.apps.filename_renamer_tool.filename_renamer_tool import DigitalCoralArkFileRenamerTool
-# from file_rename_bot.file_rename_bot import FileRenameBot
-# from dak_archive_bot.dak_archive_bot import DigitalArkArchiveBot
 
-from src.dcc_record_bot.middleware.db_session import DCADatabaseSession
+import argparse
 
-if __name__ == "__main__":
-    try:
-        if not os.path.isdir(config.INPUT_FILE_DIR):
-            raise FileNotFoundError
+# from src.dcc_record_bot.dca_record_bot import DigitalCoralArkRecordBot
+# from src.dcc_ record_bot.apps.filename_renamer_tool.filename_renamer_tool import DigitalCoralArkFileRenamerTool
+# # from file_rename_bot.file_rename_bot import FileRenameBot
+# # from dak_archive_bot.dak_archive_bot import DigitalArkArchiveBot
 
-        if not os.path.isdir(config.OUTPUT_FILE_DIR):
-            raise FileNotFoundError
-        
-        beagle = DigitalCoralArkRecordBot(config.INPUT_FILE_DIR, config.OUTPUT_FILE_DIR)
+# from src.dcc_record_bot.middleware.db_session import DCADatabaseSession
 
+
+def cmd_rename_files(args):
+    file_rename_tool = FileRenameTool(
+        input_dir=args.input_dir, output_dir=args.output_dir
+    )
     
-        ## validate one file
-
-        # filenames = []
-
-        # for filename in os.listdir(config.INPUT_FILE_DIR):
-        #     f = os.path.join(config.INPUT_FILE_DIR, filename)   
-        #     if os.path.isfile(f):
-        #         filenames.append(filename)
-
-        # beagle.filename_format_validator.validate_filename_format_for_one_file("000001_20170101_KEA_Roberts.Anka_SADDLE_RETICUL_TAGRL_ADDRL.jpg")
-        # beagle.filename_format_validator.generate_filename_format_report_from_filenames(filenames)
-
-        # print(vars(dakBot))
-        
-
-        # my_file_rename_bot = FileRenameBot(config.INPUT_FILE_DIR, config.OUTPUT_FILE_DIR)
-        # print(vars(my_file_rename_bot))
-        
-        # # validate filenames
-        # my_file_rename_bot.super.validate_file_format()
+    file_rename_tool.rename_files(safe_mode=True)
 
 
-        ## initialize database
-        session = DCADatabaseSession()
-        session.generate_species_dict_keyed_by_species_id()
+parser = argparse.ArgumentParser()
+subparsers = parser.add_subparsers(help="")
 
-        ## Rename a file
-        file_renamer_tool = DigitalCoralArkFileRenamerTool(config.INPUT_FILE_DIR, config.OUTPUT_FILE_DIR)
-        file_renamer_tool.rename_files()
+parser_rename_files = subparsers.add_parser(
+    "rename", help="Tool used to rename files, must be preconfigured."
+)
+parser_rename_files.add_argument("input_dir", type=str)
+parser_rename_files.add_argument("output_dir", type=str)
+parser_rename_files.set_defaults(func=cmd_rename_files)
 
-    except FileNotFoundError:
-        print("Input File not found", FileNotFoundError)
+args = parser.parse_args()
+args.func(args)
 
-    except Exception as e:
-        print(e)
+# if __name__ == "__main__":
+#     # Initialize all tools
