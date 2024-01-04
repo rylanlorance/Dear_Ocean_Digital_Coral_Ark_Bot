@@ -159,6 +159,17 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-config.py
-src/dcc_record_bot/apps/filename_renamer_tool/filename_renamer_tool.yaml
-src/dcc_record_bot/middleware/middleware_config.yaml
+################
+#   Custom
+################
+
+
+# config.py
+# src/dcc_record_bot/apps/filename_renamer_tool/filename_renamer_tool.yaml
+# src/dcc_record_bot/middleware/middleware_config.yaml
+.python-version
+apps/filename_renamer_tool/config.yaml
+.vscode/
+.vscode/settings.json
+.vscode/settings.json
+middleware/middleware_config.yaml

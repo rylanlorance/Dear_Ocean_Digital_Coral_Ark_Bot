@@ -17,8 +17,12 @@ def cmd_rename_files(args):
     file_rename_tool = FileRenameTool(
         input_dir=args.input_dir, output_dir=args.output_dir
     )
-    
-    file_rename_tool.rename_files(safe_mode=True)
+
+    if args.safe_mode == "on":
+        file_rename_tool.rename_files(safe_mode=True)
+
+    else:
+        file_rename_tool.rename_files(safe_mode=False)
 
 
 parser = argparse.ArgumentParser()
@@ -29,6 +33,7 @@ parser_rename_files = subparsers.add_parser(
 )
 parser_rename_files.add_argument("input_dir", type=str)
 parser_rename_files.add_argument("output_dir", type=str)
+parser_rename_files.add_argument('--safe-mode', type=str, default="on")
 parser_rename_files.set_defaults(func=cmd_rename_files)
 
 args = parser.parse_args()

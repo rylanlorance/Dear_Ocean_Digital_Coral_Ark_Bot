@@ -9,7 +9,7 @@ import pathlib
 import shutil
 
 class DigitalCoralArkFileRenamerTool():
-    species_common_name_dict = {
+    hard_coded_species_common_name_dict = {
         "bluestripe_butterflyfish": {
             'species_common_name': 'bluestripe butterflyfish',
             'species_id': 'BLUEBTR',
@@ -37,7 +37,7 @@ class DigitalCoralArkFileRenamerTool():
         
     }
 
-    def __init__(self, input_dir: str, output_dir)  -> None:
+    def __init__(self, input_dir: str, output_dir:str)  -> None:
         self.input_dir = input_dir # add validation
         self.output_dir = output_dir
 
@@ -191,8 +191,8 @@ reading from directory: [{self.input_dir}]
                 species_common_names.append(filename_species_2_common_name)
 
             for species_common_name in species_common_names:
-                if species_common_name in self.species_common_name_dict:
-                    species_id = self.species_common_name_dict[species_common_name]['species_id']
+                if species_common_name in self.hard_coded_species_common_name_dict:
+                    species_id = self.hard_coded_species_common_name_dict[species_common_name]['species_id']
                     species_ids.append(species_id)
                 else:
                     raise KeyError(f"Error: Species Common Name not found in species_dict. Incorrect File: [{filename}]")
