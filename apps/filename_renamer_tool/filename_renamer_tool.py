@@ -1,14 +1,16 @@
-from genericpath import isfile
-import re
-import yaml
-import os
+"""TODO"""
 from datetime import datetime
+import os
 import pathlib
+import re
 import shutil
+import sys
+import yaml
+
 from dca_record_bot import DigitalCoralArkRecordBot
 
-
 class FileRenameTool(DigitalCoralArkRecordBot):
+    """TODO"""
     hard_coded_species_common_name_dict = {
         "bluestripe_butterflyfish": {
             "species_common_name": "bluestripe butterflyfish",
@@ -47,9 +49,9 @@ class FileRenameTool(DigitalCoralArkRecordBot):
 
         if not os.path.isfile(config_relative_path):
             print("config.yaml not found.")
-            exit(1)
+            sys.exit(1)
 
-        with open(config_relative_path) as config_file:
+        with open(config_relative_path, "+r", encoding="UTF-8") as config_file:
             config = yaml.safe_load(config_file)
 
         # Read in default values from config file.
@@ -77,7 +79,7 @@ with safe mode set to [{safe_mode}]
         errors = 0
 
         ctr = self.default_record_starting_record_id
-        
+
         for filename_1 in os.listdir(self.input_dir):
             try:
                 f_1 = os.path.join(self.input_dir, filename_1)
@@ -107,13 +109,11 @@ with safe mode set to [{safe_mode}]
                                 ctr, record_dt, species_ids, fn_1_ext
                             )
 
-                            print(f'Creating file [{fn_2}]...')
+                            print(f"Creating file [{fn_2}]...")
 
-                            f_2 = os.path.join(self.output_dir, fn_2)   
-
+                            f_2 = os.path.join(self.output_dir, fn_2)
 
                             shutil.copyfile(f_1, f_2)
-
 
                             ctr += 1
 
@@ -123,7 +123,7 @@ with safe mode set to [{safe_mode}]
                 errors += 1
 
         return True if not errors else False
-    
+
     def generate_filename_2_based_on_extracted_values(
         self,
         record_id: int,
@@ -195,11 +195,12 @@ with safe mode set to [{safe_mode}]
                     species_ids.append(species_id)
                 else:
                     raise KeyError(
-                        f"Error: Species Common Name not found in species_dict. Incorrect File: [{fn_parsed}]"
+                        f"Error: Species Common Name not found in species_dict"
+                        f"Incorrect File: [{fn_parsed}]"
                     )
 
         else:
             print("Error: Species config setting not specified.")
-            exit(-1)
+            sys.exit(-1)
 
         return species_ids
