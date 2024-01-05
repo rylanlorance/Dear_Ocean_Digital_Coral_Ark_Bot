@@ -9,10 +9,8 @@ import yaml
 
 from dca_record_bot import DigitalCoralArkRecordBot
 
-
 class FileRenameTool(DigitalCoralArkRecordBot):
     """TODO"""
-
     hard_coded_species_common_name_dict = {
         "bluestripe_butterflyfish": {
             "species_common_name": "bluestripe butterflyfish",
@@ -86,33 +84,38 @@ with safe mode set to [{safe_mode}]
             try:
                 f_1 = os.path.join(self.input_dir, filename_1)
                 if os.path.isfile(f_1):
-                    print(f"Evaluating [{filename_1}]...")
-                    f_1_parsed = re.split(r"\s|_|\.+", filename_1)
-                    self.validate_raw_filenames_before_rename(f_1_parsed)
-                    record_dt = self.extract_record_datetime_from_unformatted_file_name(
-                        f_1_parsed
-                    )
-                    species_ids = self.extract_species_ids_from_unformatted_file_name(
-                        f_1_parsed
-                    )
-
-                    if safe_mode:
-                        print("\u2713")
-
-                    if not safe_mode:
-                        fn_1_ext = pathlib.Path(f_1).suffix
-
-                        fn_2 = self.generate_filename_2_based_on_extracted_values(
-                            ctr, record_dt, species_ids, fn_1_ext
+                    if os.path.isfile(f_1):
+                        print(f"Evaluating [{filename_1}]...")
+                        f_1_parsed = re.split(r"\s|_|\.+", filename_1)
+                        self.validate_raw_filenames_before_rename(f_1_parsed)
+                        record_dt = (
+                            self.extract_record_datetime_from_unformatted_file_name(
+                                f_1_parsed
+                            )
+                        )
+                        species_ids = (
+                            self.extract_species_ids_from_unformatted_file_name(
+                                f_1_parsed
+                            )
                         )
 
-                        print(f"Creating file [{fn_2}]...")
+                        if safe_mode:
+                            print("\u2713")
 
-                        f_2 = os.path.join(self.output_dir, fn_2)
+                        if not safe_mode:
+                            fn_1_ext = pathlib.Path(f_1).suffix
 
-                        shutil.copyfile(f_1, f_2)
+                            fn_2 = self.generate_filename_2_based_on_extracted_values(
+                                ctr, record_dt, species_ids, fn_1_ext
+                            )
 
-                        ctr += 1
+                            print(f"Creating file [{fn_2}]...")
+
+                            f_2 = os.path.join(self.output_dir, fn_2)
+
+                            shutil.copyfile(f_1, f_2)
+
+                            ctr += 1
 
             except Exception as e:
                 print("Error: File not valid for Filename Renamer Tool.")

@@ -13,17 +13,8 @@ class FilenameValidatorTool(DigitalCoralArkRecordBot):
         super().validate_directory_parameter(input_dir)
         self.input_dir = input_dir
 
-        self.filenames = self.generate_filenames_from_input_file()
+        self.filenames = super().generate_filenames_from_input_file(self.input_dir)
 
-    def generate_filenames_from_input_file(self):
-        filenames = []
-
-        for filename in os.listdir(self.input_dir):
-            f = os.path.join(self.input_dir, filename)
-            if os.path.isfile(f):
-                filenames.append(filename)
-
-        return filenames
 
     def generate_file_format_report(self):
         num_files = len(self.filenames)

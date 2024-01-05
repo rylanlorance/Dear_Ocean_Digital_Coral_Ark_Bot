@@ -1,4 +1,5 @@
 import os
+from apps.database_upload_tool.database_upload_tool import DatabaseUploadTool
 from apps.file_validator_tool.file_validator_tool import FilenameValidatorTool
 
 from apps.filename_renamer_tool.filename_renamer_tool import FileRenameTool
@@ -29,6 +30,10 @@ def cmd_validate_files(args):
     file_validator_tool = FilenameValidatorTool(args.input_dir)
     file_validator_tool.generate_file_format_report()
 
+def cmd_upload_files(args):
+    database_upload_tool = DatabaseUploadTool(args.input_dir)
+    database_upload_tool.upload_files_to_database(safe_mode=True)
+
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(help="")
 
@@ -46,9 +51,15 @@ parser_validate_files = subparsers.add_parser(
 parser_validate_files.add_argument("input_dir", type=str)
 parser_validate_files.set_defaults(func=cmd_validate_files)
 
+parser_upload_files = subparsers.add_parser(
+    "upload", help="Tool used to upload records to the database."
+)
+parser_upload_files.add_argument("input_dir", type=str)
+parser_upload_files.set_defaults(func=cmd_upload_files)
 
 args = parser.parse_args()
 args.func(args)
+
 
 # if __name__ == "__main__":
 #     # Initialize all tools
