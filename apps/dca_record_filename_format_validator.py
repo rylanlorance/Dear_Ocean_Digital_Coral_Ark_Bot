@@ -60,7 +60,6 @@ validating [{number_of_files}] files
             return True
 
         except Exception as e:
-            print("error!", e)
             raise e
 
     def validate_filename_format_file_id(self, file_id):

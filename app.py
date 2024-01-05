@@ -1,4 +1,5 @@
 import os
+from apps.file_validator_tool.file_validator_tool import FilenameValidatorTool
 
 from apps.filename_renamer_tool.filename_renamer_tool import FileRenameTool
 import config
@@ -24,6 +25,9 @@ def cmd_rename_files(args):
     else:
         file_rename_tool.rename_files(safe_mode=False)
 
+def cmd_validate_files(args):
+    file_validator_tool = FilenameValidatorTool(args.input_dir)
+    file_validator_tool.generate_file_format_report()
 
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(help="")
@@ -35,6 +39,13 @@ parser_rename_files.add_argument("input_dir", type=str)
 parser_rename_files.add_argument("output_dir", type=str)
 parser_rename_files.add_argument('--safe-mode', type=str, default="on")
 parser_rename_files.set_defaults(func=cmd_rename_files)
+
+parser_validate_files = subparsers.add_parser(
+    "validate", help="Tool for validating filename formats"
+)
+parser_validate_files.add_argument("input_dir", type=str)
+parser_validate_files.set_defaults(func=cmd_validate_files)
+
 
 args = parser.parse_args()
 args.func(args)
