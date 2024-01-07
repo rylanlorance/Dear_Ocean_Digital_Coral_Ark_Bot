@@ -57,7 +57,7 @@ class FileRenameTool(DigitalCoralArkRecordBot):
         # Read in default values from config file.
         self.default_record_starting_record_id = config["starting_image_id"]
         self.default_record_location_id = config["location_id"]
-        self.default_record_user_id = config["user_id"]
+        self.default_donor_id = config['donor_id']
         self.default_record_tagger_id = config["tagger_id"]
 
         self.config_datetime_field_index = config["datetime_field_index"]
@@ -134,10 +134,12 @@ with safe mode set to [{safe_mode}]
         f2_record_id = "{:>06d}".format(record_id)
         f2_datetime = record_dt.strftime("%Y%m%d")
         f2_loc_id = self.default_record_location_id
-
+        f2_donor_id = self.default_donor_id
+        
         fn_2 = f2_record_id + "_"
         fn_2 += f2_datetime + "_"
         fn_2 += f2_loc_id + "_"
+        fn_2 += f2_donor_id + "_"
 
         if len(species_ids) == 1:
             fn_2 += species_ids[0] + "_"

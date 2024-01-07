@@ -18,7 +18,6 @@ class Record(Base):
     record_id: Mapped[int] = mapped_column(primary_key=True)
     location_id: Mapped[str] = mapped_column(String(50))
     #description
-    tagger_id: Mapped[int] = mapped_column(Integer)
     recorded_dt: Mapped[datetime] = mapped_column(Date)
     uploaded_dt: Mapped[datetime] = mapped_column(Date)
     species_tag_1: Mapped[str] = mapped_column(String)
@@ -27,6 +26,7 @@ class Record(Base):
     filename_string: Mapped[str] = mapped_column(String)
     file_extension: Mapped[str] = mapped_column(String)
     image_id: Mapped[str] = mapped_column(String)
-
+    tagger_id: Mapped[int] = mapped_column(Integer)
+    donor_id: Mapped[str] = mapped_column(String)
 
     __table_args__= {'schema': 'dca'}

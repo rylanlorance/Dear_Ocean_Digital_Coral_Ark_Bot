@@ -4,10 +4,12 @@ import re
 import os
 import config
 import yaml
-# from .apps.dca_record_filename_format_validator import DigiArkFilenameFormatValidator
-# from .apps.filename_renamer_tool.filename_renamer_tool import DigitalCoralArkFileRenamerTool
 
-class DigitalCoralArkRecordBot():    
+from middleware.db_session import DCADatabaseSession
+
+class DigitalCoralArkRecordBot():
+    db_session = DCADatabaseSession()
+
     # filename_format_validator = DigiArkFilenameFormatValidator()
     # file_renamer_tool = DigitalCoralArkFileRenamerTool()
 
@@ -18,6 +20,8 @@ class DigitalCoralArkRecordBot():
 
 
     def validate_directory_parameter(self, dir):
+        self.cleanup_directory_parameter(dir)
+
         if not os.path.isdir(dir):
             print("Error: Directory not found", dir)
             exit(-1)
@@ -33,11 +37,18 @@ class DigitalCoralArkRecordBot():
           print("Error: Output directory not empty")
           exit(-1)
     
+    def cleanup_directory_parameter(self, dir):
+        try:
+            ds_file = os.path.join(dir, ".DS_STORE")
+            os.remove(ds_file)
+        except OSError:
+            pass
+
     def generate_filenames_from_input_file(self, dir):
             filenames = []
-
+            
             for filename in os.listdir(dir):
-                f = os.path.join(dir)
+                f = os.path.join(dir, filename)
                 if os.path.isfile(f):
                     filenames.append(filename)
 

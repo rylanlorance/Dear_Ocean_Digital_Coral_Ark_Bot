@@ -57,9 +57,9 @@ validating [{num_files}] files."""
         filename_id = file_name_parsed[0]
         filename_dt = file_name_parsed[1]
         filename_loc_id = file_name_parsed[2]
-        filename_user_id = [file_name_parsed[3], file_name_parsed[4]]
+        filename_donor_id = file_name_parsed[3]
         
-        if len(file_name_parsed) != 7:
+        if len(file_name_parsed) != 8:
             raise ValueError(
                 f"filename format error: [{filename}]" "Incorrect number of fields."
             )
@@ -67,6 +67,7 @@ validating [{num_files}] files."""
         self.validate_filename_format_file_id(filename_id)
         self.validate_filename_format_dt(filename_dt)
         self.validate_filename_format_location_id(filename_loc_id)
+        self.validate_filename_donor_id(filename_donor_id)
 
     def validate_filename_format_file_id(self, file_id):
         if len(file_id) != 6:
@@ -83,4 +84,10 @@ validating [{num_files}] files."""
         if len(loc_id) != 3:
             raise ValueError(
                 "Filename Location Id Format Error: Must be 3 characters long."
+            )
+
+    def validate_filename_donor_id(self, donor_id):
+        if len(donor_id) != 7:
+            raise ValueError(
+                "Filename "
             )
