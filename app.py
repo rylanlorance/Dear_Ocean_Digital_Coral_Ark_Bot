@@ -32,7 +32,11 @@ def cmd_validate_files(args):
 
 def cmd_upload_files(args):
     database_upload_tool = DatabaseUploadTool(args.input_dir)
-    database_upload_tool.upload_files_to_database(safe_mode=True)
+
+    if args.safe_mode == "on":
+        database_upload_tool.upload_files_to_database(safe_mode=True)
+    else:
+        database_upload_tool.upload_files_to_database(safe_mode=False)
 
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(help="")
@@ -55,6 +59,7 @@ parser_upload_files = subparsers.add_parser(
     "upload", help="Tool used to upload records to the database."
 )
 parser_upload_files.add_argument("input_dir", type=str)
+parser_upload_files.add_argument('--safe-mode', type=str)
 parser_upload_files.set_defaults(func=cmd_upload_files)
 
 args = parser.parse_args()
