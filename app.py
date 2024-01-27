@@ -59,7 +59,7 @@ parser_upload_files = subparsers.add_parser(
     "upload", help="Tool used to upload records to the database."
 )
 parser_upload_files.add_argument("input_dir", type=str)
-parser_upload_files.add_argument('--safe-mode', type=str)
+parser_upload_files.add_argument('--safe-mode', type=str, default="on")
 parser_upload_files.set_defaults(func=cmd_upload_files)
 
 args = parser.parse_args()
