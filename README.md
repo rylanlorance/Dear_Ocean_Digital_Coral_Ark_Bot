@@ -22,9 +22,12 @@ python app.py
 
 ```
 
-## Python 
+## Correct format 
 
 Example Correct Format: 
 
-"000002_20170101_KEA_Roberts.Anka_SADDLE_RETICUL_TAGRL_ADDRL.jpg"
+2016-01-31_HAN_BLUEBTR_0000000_TAGBG_0000001_Roberts_a.jpg
+
+
+
 

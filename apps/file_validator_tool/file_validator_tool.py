@@ -5,9 +5,10 @@ import re
 
 from dca_record_bot import DigitalCoralArkRecordBot
 
-
 class FilenameValidatorTool(DigitalCoralArkRecordBot):
-    """TODO"""
+    """I validate the filename format of input records. This typically happens before 
+       we attempt to insert into the database. I do not validate the content of the fields 
+       in the filename; rather, I only check for filename length and character types."""
 
     def __init__(self, input_dir) -> None:
         super().validate_directory_parameter(input_dir)
@@ -17,9 +18,9 @@ class FilenameValidatorTool(DigitalCoralArkRecordBot):
 
 
     def generate_file_format_report(self):
+        """Generates a file format report for multiple records."""
         num_files = len(self.filenames)
 
-        """TODO"""
         print(
             f"""Digital Coral Ark
 Filename Validator Tool
@@ -40,54 +41,42 @@ validating [{num_files}] files."""
                     (filename, e)
                 )
         
-        print("Correct Files: ")
+        print(f"Correct Files [{len(files_correct_format)}]:")
         print([i for i in files_correct_format])
 
-        print('Incorrect Files: ')
+        print(f"Incorrect Files [{len(files_incorrect_format)}]:")
         
         for filename, error in files_incorrect_format:
             print(f'[{filename}] {error}')
   
-
-
     def validate_filename_format(self, filename: str):
-        """TODO"""
+        """Validates filename format for all fields. Checks strength length and datetime. """
         file_name_parsed = re.split(r"\s|_|\.+", filename)
-
-        filename_id = file_name_parsed[0]
-        filename_dt = file_name_parsed[1]
-        filename_loc_id = file_name_parsed[2]
-        filename_donor_id = file_name_parsed[3]
         
-        if len(file_name_parsed) != 8:
+        # numbers of fields must equal 9
+        if len(file_name_parsed) != 9:
             raise ValueError(
                 f"filename format error: [{filename}]" "Incorrect number of fields."
             )
         
-        self.validate_filename_format_file_id(filename_id)
-        self.validate_filename_format_dt(filename_dt)
-        self.validate_filename_format_location_id(filename_loc_id)
-        self.validate_filename_donor_id(filename_donor_id)
+        # all fields must have the exact character length (i.e. species_id = 7)
+        # except for the donor info.  
+        file_name_excluding_donor_id = file_name_parsed[:-3]
+        total_chars_in_filename_excluding_donor_id =  sum([len(i) for i in file_name_excluding_donor_id])
 
-    def validate_filename_format_file_id(self, file_id):
-        if len(file_id) != 6:
-            raise ValueError("Filename_ID_Error. Incorrect number of values.")
+        if total_chars_in_filename_excluding_donor_id != 39:
+            raise ValueError("Filename format error: [{}]. Aggregate length wrong. ")
+  
+        fn_dt = file_name_parsed[0]
+        fn_loc_id = file_name_parsed[1]
 
-        if not file_id.isnumeric():
-            raise ValueError("Filename_ID_Error. Filename_id can only contain digits.")
+        self.__validate_filename_format_dt(fn_dt)
+        self.__validate_fn_format_loc_id(fn_loc_id)
 
-    def validate_filename_format_dt(self, dt):
-        if not bool(datetime.datetime.strptime(dt, "%Y%m%d")):
+    def __validate_filename_format_dt(self, dt):
+        if not bool(datetime.datetime.strptime(dt, "%Y-%m-%d")):
             raise ValueError("Filename Date Format Error: Must be in %Y%m%d format.")
-
-    def validate_filename_format_location_id(self, loc_id):
-        if len(loc_id) != 3:
-            raise ValueError(
-                "Filename Location Id Format Error: Must be 3 characters long."
-            )
-
-    def validate_filename_donor_id(self, donor_id):
-        if len(donor_id) != 7:
-            raise ValueError(
-                "Filename "
-            )
+    
+    def __validate_fn_format_loc_id(self, loc_id):
+        if any(char.isdigit() for char in loc_id):
+            raise ValueError("Filename Location Id Format Error: Must not contain digits.")
