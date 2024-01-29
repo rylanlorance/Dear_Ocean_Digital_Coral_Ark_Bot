@@ -12,7 +12,6 @@ import argparse
 # # from file_rename_bot.file_rename_bot import FileRenameBot
 # # from dak_archive_bot.dak_archive_bot import DigitalArkArchiveBot
 
-# from src.dcc_record_bot.middleware.db_session import DCADatabaseSession
 
 
 def cmd_rename_files(args):

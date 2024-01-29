@@ -2,6 +2,8 @@ import sqlalchemy
 from dca_record_bot import DigitalCoralArkRecordBot
 from sqlalchemy import exc
 
+from datetime import datetime
+
 import re
 
 from middleware.models.record import Record
@@ -69,7 +71,6 @@ class DatabaseUploadTool(DigitalCoralArkRecordBot):
 
     def upload_file_to_db(self, filename: str, safe_mode: bool):
         record_abstract = self.RecordFileAbstraction(filename)
-        print('record_abstract', vars(record_abstract))
 
         # validate species id
         species_dict = super().db_session.generate_species_dict_keyed_by_species_id()
@@ -81,22 +82,19 @@ class DatabaseUploadTool(DigitalCoralArkRecordBot):
 
         donor_id = super().db_session.retreive_donor_id_by_last_name(record_abstract.donor_last_name)
 
+        uploaded_dt = datetime.now()
+
         # attempt to upload the file to the database
         record = Record(
             record_id=record_abstract.id,
             recorded_dt=record_abstract.dt,
-            location_id=record_abstract.location_id,
-            donor_id=record_abstract.donor_id,
+            location_id=record_abstract.loc_id,
+            donor_id=donor_id,
             species_tag_1=record_abstract.species_id_1,
             species_tag_2=record_abstract.species_id_2,
-            uploaded_dt="20240101",
+            uploaded_dt=uploaded_dt,
             tagger_id=record_abstract.tagger_id
         )
 
-        self.db_session.session.add(record)
-        self.db_session.session.flush()
-
-        if not safe_mode:
-            self.db_session.session.commit()
-            print('Database changes committed.')
+        super().db_session.upload_record_to_db(record, safe_mode)
 

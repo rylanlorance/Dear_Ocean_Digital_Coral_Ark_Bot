@@ -58,5 +58,11 @@ class DCADatabaseSession():
         except MultipleResultsFound:
             print("Error: Multiple donor ids matched for lastname")
 
+    def upload_record_to_db(self, record: Record, safe_mode: bool):
+        self.__session.add(record)
+        self.__session.flush()
 
-        
+        if not safe_mode:
+            self.__session.commit()
+            
+    

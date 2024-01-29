@@ -40,5 +40,5 @@ INPUT_DIR=$INPUT_DIR_CLEANED
 echo "Step 5. Run Upload Script with Safe Mode On"
 python app.py upload $INPUT_DIR --safe-mode on
 
-echo "Passed!"
+# echo "Passed!"
 python app.py upload $INPUT_DIR --safe-mode off
