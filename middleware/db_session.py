@@ -1,6 +1,10 @@
-from sqlalchemy import create_engine
+from sqlite3 import DatabaseError
+from sqlalchemy import Select, create_engine
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import MultipleResultsFound
+
+from middleware.models.donor import Donor
 
 from .models.record import Record
 from .models.species import Species
@@ -12,19 +16,19 @@ class DCADatabaseSession():
         with open('./middleware/middleware_config.yaml') as f1:
             config = yaml.safe_load(f1)
 
-            self.db_host = config['DB_HOST']
-            self.db_user_id = config['DB_USER_ID']
-            self.db_password = config['DB_PASSWORD']
+            self.__db_host = config['DB_HOST']
+            self.__db_user_id = config['DB_USER_ID']
+            self.__db_password = config['DB_PASSWORD']
 
         url = (
-            f'postgresql://{self.db_user_id}:'
-            f'{self.db_password}'
-            f'@{self.db_host}/dca_dev_working'
+            f'postgresql://{self.__db_user_id}:'
+            f'{self.__db_password}'
+            f'@{self.__db_host}/dca_dev_working'
         )
         
         engine = create_engine(url)   
 
-        self.session = Session(engine)
+        self.__session = Session(engine)
 
     
     def generate_species_dict_keyed_by_species_id(self):        
@@ -32,8 +36,27 @@ class DCADatabaseSession():
 
         species_dict = {}
 
-        for species in self.session.scalars(stmt):
+        for species in self.__session.scalars(stmt):
             species_dict[species.species_id] = species
 
         return species_dict
+    
+    def retreive_donor_id_by_last_name(self, lastname: str):
+        """Queries donor table based on last name"""
+
+        stmt = Select(Donor).where(Donor.last_name==lastname)
+
+        result = self.__session.execute(stmt)
+
+        try:
+            donor_res = result.scalar_one_or_none()
+            if not donor_res:
+                raise DatabaseError
+            else:
+                return donor_res.donor_id
+
+        except MultipleResultsFound:
+            print("Error: Multiple donor ids matched for lastname")
+
+
         
