@@ -59,7 +59,7 @@ class FileRenameTool(DigitalCoralArkRecordBot):
         # Read in default values from config file.
         self.default_record_starting_record_id = config["starting_image_id"]
         self.default_record_location_id = config["location_id"]
-        self.default_donor_id = config["donor_id"]
+        self.default_donor_info = config["donor_info"]
         self.default_record_tagger_id = config["tagger_id"]
 
         self.config_datetime_field_index = config["datetime_field_index"]
@@ -101,16 +101,17 @@ with safe mode set to [{safe_mode}]
                             )
                         )
 
+                        fn_1_ext = pathlib.Path(f_1).suffix
+
+                        fn_2 = self.generate_filename_2_based_on_extracted_values(
+                            ctr, record_dt, species_ids, fn_1_ext
+                        )
+
                         if safe_mode:
+                            print(f"Filename 2 Name: {fn_2}")
                             print("\u2713")
 
                         if not safe_mode:
-                            fn_1_ext = pathlib.Path(f_1).suffix
-
-                            fn_2 = self.generate_filename_2_based_on_extracted_values(
-                                ctr, record_dt, species_ids, fn_1_ext
-                            )
-
                             print(f"Creating file [{fn_2}]...")
 
                             f_2 = os.path.join(self.output_dir, fn_2)
@@ -133,26 +134,33 @@ with safe mode set to [{safe_mode}]
         species_ids: list,
         filename_1_extension: str,
     ):
-        f2_record_id = "{:>06d}".format(record_id)
-        f2_datetime = record_dt.strftime("%Y%m%d")
+        f2_datetime = record_dt.strftime("%Y-%m-%d")
         f2_loc_id = self.default_record_location_id
-        f2_donor_id = self.default_donor_id
+        f2_record_id = "{:>06d}".format(record_id)
+        f2_donor_name = self.default_donor_info
+        f2_tagger_id = f"TAG{self.default_record_tagger_id}"
 
-        fn_2 = f2_record_id + "_"
-        fn_2 += f2_datetime + "_"
-        fn_2 += f2_loc_id + "_"
-        fn_2 += f2_donor_id + "_"
+        fn_2 = f"{f2_datetime}_{f2_loc_id}_"
 
-        if len(species_ids) == 1:
+        if len(species_ids) == 0:
+            fn_2 += "0000000_0000000"
+
+        elif len(species_ids) == 1:
             fn_2 += species_ids[0] + "_"
             fn_2 += "0000000" + "_"
 
-        else:
+        elif len(species_ids) == 2:
             fn_2 += species_ids[0] + "_"
             fn_2 += species_ids[1] + "_"
 
-        fn_2 += f"TAG{self.default_record_tagger_id}"
+        else:
+            print("Error: Species ID Misconfigured.")
+            exit(-1)
 
+        fn_2 += f'{f2_tagger_id}_'
+        fn_2 += f'{f2_record_id}_'
+        fn_2 += f'{f2_donor_name}'
+    
         fn_2 += filename_1_extension.lower()
 
         return fn_2
@@ -191,6 +199,7 @@ with safe mode set to [{safe_mode}]
                     fn_parsed[2] + "_" + fn_parsed[3]
                 ).lower()
                 species_common_names.append(filename_species_2_common_name)
+                
             for species_common_name in species_common_names:
                 if species_common_name in self.hard_coded_species_common_name_dict:
                     species_id = self.hard_coded_species_common_name_dict[
