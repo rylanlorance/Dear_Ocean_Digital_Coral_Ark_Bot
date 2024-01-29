@@ -10,23 +10,26 @@ class DatabaseUploadTool(DigitalCoralArkRecordBot):
     class RecordFileAbstraction:
         def __init__(self, filename) -> None:
             fn_parsed = re.split(r"\s|_|\.+", filename)
-            self.record_id = fn_parsed[0]
-            self.record_dt = fn_parsed[1]
-            self.location_id = fn_parsed[2]
-            self.donor_id = fn_parsed[3]
 
-            if fn_parsed[4] == "0000000":
+            self.dt = fn_parsed[0]
+            self.loc_id = fn_parsed[1]
+            
+            if fn_parsed[2] == "0000000":
                 self.species_id_1 = None
             else:
-                self.species_id_1 = fn_parsed[4]
+                self.species_id_1 = fn_parsed[2]
             
-            if fn_parsed[5] == "0000000":
+            if fn_parsed[3] == "0000000":
                 self.species_id_2 = None
             else:
-                self.species_id_2 = fn_parsed[5]
+                self.species_id_2 = fn_parsed[3]
+            
+            self.tagger_id = fn_parsed[4][3:5]
+            self.id = fn_parsed[5]
 
-            self.tagger_id = fn_parsed[6][3:5]
-
+            self.donor_last_name = fn_parsed[6]
+            self.donor_first_initial = fn_parsed[7]
+ 
     def __init__(self, input_dir) -> None:
         super().validate_directory_parameter(input_dir)
         self.input_dir = input_dir
@@ -76,11 +79,12 @@ class DatabaseUploadTool(DigitalCoralArkRecordBot):
                 if i not in species_dict:
                     raise KeyError("Error! Species ID not in Species Table.")
 
-        # print('1')
+        donor_id = super().db_session.retreive_donor_id_by_last_name(record_abstract.donor_last_name)
+
         # attempt to upload the file to the database
         record = Record(
-            record_id=record_abstract.record_id,
-            recorded_dt=record_abstract.record_dt,
+            record_id=record_abstract.id,
+            recorded_dt=record_abstract.dt,
             location_id=record_abstract.location_id,
             donor_id=record_abstract.donor_id,
             species_tag_1=record_abstract.species_id_1,
