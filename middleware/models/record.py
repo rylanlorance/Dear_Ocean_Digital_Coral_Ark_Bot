@@ -20,8 +20,8 @@ class Record(Base):
     #description
     recorded_dt: Mapped[datetime] = mapped_column(Date)
     uploaded_dt: Mapped[datetime] = mapped_column(Date)
-    species_tag_1: Mapped[str] = mapped_column(String)
-    species_tag_2: Mapped[str] = mapped_column(String)
+    codebook_tag_1: Mapped[str] = mapped_column(String)
+    codebook_tag_2: Mapped[str] = mapped_column(String)
     google_drive_url: Mapped[str] = mapped_column(String)
     filename_string: Mapped[str] = mapped_column(String)
     file_extension: Mapped[str] = mapped_column(String)

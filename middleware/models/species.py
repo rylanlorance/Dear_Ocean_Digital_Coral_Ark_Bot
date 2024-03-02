@@ -16,8 +16,6 @@ class Species(Base):
     __tablename__ = "species"
 
     species_id: Mapped[str] = mapped_column(String(7), primary_key=True)
-    family: Mapped[str] = mapped_column(String)
-    species: Mapped[str] = mapped_column(String)
-    species_common_name: Mapped[str] = mapped_column(String)
-
-    __table_args__ = {'schema': 'species_codebook'}
+    family_id: Mapped[str] = mapped_column(String(7))
+    common_name: Mapped[str] = mapped_column(String(50))
+    __table_args__ = {'schema': 'dca_codebook'}

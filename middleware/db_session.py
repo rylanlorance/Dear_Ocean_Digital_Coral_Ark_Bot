@@ -30,7 +30,18 @@ class DCADatabaseSession():
 
         self.__session = Session(engine)
 
-    
+    def generate_dca_codebook_object(self):
+        dca_codebook = {
+            'species': {},
+            'families': {}
+        }
+        stmt = select(Species)
+
+        for species in self.__session.scalars(stmt):
+            dca_codebook['species'][species.common_name] = species
+
+        return dca_codebook
+
     def generate_species_dict_keyed_by_species_id(self):        
         stmt = select(Species)
 
