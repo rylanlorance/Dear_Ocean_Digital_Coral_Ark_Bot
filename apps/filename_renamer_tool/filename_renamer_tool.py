@@ -13,33 +13,7 @@ from dca_record_bot import DigitalCoralArkRecordBot
 class FileRenameTool(DigitalCoralArkRecordBot):
     """TODO"""
 
-    hard_coded_species_common_name_dict = {
-        "bluestripe_butterflyfish": {
-            "species_common_name": "bluestripe butterflyfish",
-            "species_id": "BLUEBTR",
-            "family": "chaetodontidae",
-            "species": "fremblii",
-        },
-        "thompsons_butterflyfish": {
-            "species_common_name": "thompson's butterflyfish",
-            "species_id": "THOMBTR",
-            "family": "chaetodontidae",
-            "species": "thompsoni",
-        },
-        "lined_butterflyfish": {
-            "species_common_name": "lined butterflyfish",
-            "species_id": "LINEBTR",
-            "family": "chaetodontidae",
-            "species": "lineolatus",
-        },
-        "fourspot_butterflyfish": {
-            "species_common_name": "fourspot butterflyfish",
-            "species_id": "FOURBTR",
-            "family": "blah blah",
-            "species": "blahblah",
-        },
-    }
-
+    
     def __init__(self, input_dir: str, output_dir: str) -> None:
         super().validate_directory_parameter(input_dir)
         super().validate_output_directory_parameter(output_dir)
@@ -63,8 +37,10 @@ class FileRenameTool(DigitalCoralArkRecordBot):
         self.default_record_tagger_id = config["tagger_id"]
 
         self.config_datetime_field_index = config["datetime_field_index"]
-        self.config_species_field_setting = config["species_field_index_setting"]
+        self.config_codebook_field_index_setting = config["codebook_field_index_setting"]
 
+        dca_codebook = super().db_session.generate_dca_codebook_object()
+        
     def rename_files(self, safe_mode: bool):
         """TODO:"""
 
@@ -90,13 +66,15 @@ with safe mode set to [{safe_mode}]
                         print(f"Evaluating [{filename_1}]...")
                         f_1_parsed = re.split(r"\s|_|\.+", filename_1)
                         self.validate_raw_filenames_before_rename(f_1_parsed)
+
                         record_dt = (
                             self.extract_record_datetime_from_unformatted_file_name(
                                 f_1_parsed
                             )
                         )
+
                         species_ids = (
-                            self.extract_species_ids_from_unformatted_file_name(
+                            self.extract_codebook_ids_from_unformatted_file_name(
                                 f_1_parsed
                             )
                         )
@@ -184,33 +162,40 @@ with safe mode set to [{safe_mode}]
 
         return datetime.strptime(potential_dt_field, "%Y%m%d")
 
-    def extract_species_ids_from_unformatted_file_name(self, fn_parsed: list):
+    def extract_codebook_ids_from_unformatted_file_name(self, fn_parsed: list):
         """TODO"""
-        species_ids = []
-        species_common_names = []
+        codebook_ids = []
 
-        if self.config_species_field_setting == "first_four_words":
-            filename_species_1_common_name = (fn_parsed[0] + "_" + fn_parsed[1]).lower()
-            species_common_names.append(filename_species_1_common_name)
+        if self.config_codebook_field_index_setting == "first_four_words":
+            fn_codebook_id_1_common_name = (fn_parsed[0] + "_" + fn_parsed[1]).lower()
+            codebook_ids.append(fn_codebook_id_1_common_name)
 
-            if "and" in fn_parsed:
-                fn_parsed.remove("and")
-                filename_species_2_common_name = (
-                    fn_parsed[2] + "_" + fn_parsed[3]
-                ).lower()
-                species_common_names.append(filename_species_2_common_name)
+            
+
+   
+
+        # if self.config_species_field_setting == "first_four_words":
+        #     filename_species_1_common_name = (fn_parsed[0] + "_" + fn_parsed[1]).lower()
+        #     species_common_names.append(filename_species_1_common_name)
+
+            # if "and" in fn_parsed:
+            #     fn_parsed.remove("and")
+            #     filename_species_2_common_name = (
+            #         fn_parsed[2] + "_" + fn_parsed[3]
+            #     ).lower()
+            #     species_common_names.append(filename_species_2_common_name)
                 
-            for species_common_name in species_common_names:
-                if species_common_name in self.hard_coded_species_common_name_dict:
-                    species_id = self.hard_coded_species_common_name_dict[
-                        species_common_name
-                    ]["species_id"]
-                    species_ids.append(species_id)
-                else:
-                    raise KeyError(
-                        f"Error: Species Common Name not found in species_dict"
-                        f"Incorrect File: [{fn_parsed}]"
-                    )
+            # for species_common_name in species_common_names:
+            #     if species_common_name in self.hard_coded_species_common_name_dict:
+            #         species_id = self.hard_coded_species_common_name_dict[
+            #             species_common_name
+            #         ]["species_id"]
+            #         species_ids.append(species_id)
+            #     else:
+            #         raise KeyError(
+            #             f"Error: Species Common Name not found in species_dict"
+            #             f"Incorrect File: [{fn_parsed}]"
+            #         )
 
         else:
             print("Error: Species config setting not specified.")
