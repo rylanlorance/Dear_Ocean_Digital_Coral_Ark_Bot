@@ -1,5 +1,7 @@
 """TODO"""
+
 from datetime import datetime
+from multiprocessing import Value
 import os
 import pathlib
 import re
@@ -13,7 +15,6 @@ from dca_record_bot import DigitalCoralArkRecordBot
 class FileRenameTool(DigitalCoralArkRecordBot):
     """TODO"""
 
-    
     def __init__(self, input_dir: str, output_dir: str) -> None:
         super().validate_directory_parameter(input_dir)
         super().validate_output_directory_parameter(output_dir)
@@ -37,10 +38,12 @@ class FileRenameTool(DigitalCoralArkRecordBot):
         self.default_record_tagger_id = config["tagger_id"]
 
         self.config_datetime_field_index = config["datetime_field_index"]
-        self.config_codebook_field_index_setting = config["codebook_field_index_setting"]
+        self.config_codebook_field_index_setting = config[
+            "codebook_field_index_setting"
+        ]
 
         dca_codebook = super().db_session.generate_dca_codebook_object()
-        
+
     def rename_files(self, safe_mode: bool):
         """TODO:"""
 
@@ -59,49 +62,50 @@ with safe mode set to [{safe_mode}]
         ctr = self.default_record_starting_record_id
 
         for filename_1 in os.listdir(self.input_dir):
-            try:
-                f_1 = os.path.join(self.input_dir, filename_1)
-                if os.path.isfile(f_1):
+            if not filename_1.startswith('.'):
+                try:
+                    f_1 = os.path.join(self.input_dir, filename_1)
                     if os.path.isfile(f_1):
-                        print(f"Evaluating [{filename_1}]...")
-                        f_1_parsed = re.split(r"\s|_|\.+", filename_1)
-                        self.validate_raw_filenames_before_rename(f_1_parsed)
+                        if os.path.isfile(f_1):
+                            print(f"Evaluating [{filename_1}]...")
+                            filename_1 = self.cleanup_raw_filenames_before_rename(filename_1)
+                            f_1_parsed = re.split(r"\s|_|\.+", filename_1)
+                            self.validate_raw_filenames_before_rename(f_1_parsed)
 
-                        record_dt = (
-                            self.extract_record_datetime_from_unformatted_file_name(
-                                f_1_parsed
+                            record_dt = (
+                                self.extract_record_datetime_from_unformatted_file_name(
+                                    f_1_parsed
+                                )
                             )
-                        )
 
-                        species_ids = (
-                            self.extract_codebook_ids_from_unformatted_file_name(
-                                f_1_parsed
+                            codebook_ids = (
+                                self.extract_codebook_ids_from_unformatted_file_name(
+                                    f_1_parsed
+                                )
                             )
-                        )
+                            fn_1_ext = pathlib.Path(f_1).suffix
 
-                        fn_1_ext = pathlib.Path(f_1).suffix
+                            fn_2 = self.generate_filename_2_based_on_extracted_values(
+                                ctr, record_dt, codebook_ids, fn_1_ext
+                            )
 
-                        fn_2 = self.generate_filename_2_based_on_extracted_values(
-                            ctr, record_dt, species_ids, fn_1_ext
-                        )
+                            if safe_mode:
+                                print(f"Filename 2 Name: {fn_2}")
+                                print("\u2713")
 
-                        if safe_mode:
-                            print(f"Filename 2 Name: {fn_2}")
-                            print("\u2713")
+                            if not safe_mode:
+                                print(f"Creating file [{fn_2}]...")
 
-                        if not safe_mode:
-                            print(f"Creating file [{fn_2}]...")
+                                f_2 = os.path.join(self.output_dir, fn_2)
 
-                            f_2 = os.path.join(self.output_dir, fn_2)
+                                shutil.copyfile(f_1, f_2)
 
-                            shutil.copyfile(f_1, f_2)
+                                ctr += 1
 
-                            ctr += 1
-
-            except Exception as e:
-                print("Error: File not valid for Filename Renamer Tool.")
-                print(e)
-                errors += 1
+                except Exception as e:
+                    print("Error: File not valid for Filename Renamer Tool.")
+                    print(e)
+                    errors += 1
 
         return True if not errors else False
 
@@ -135,13 +139,16 @@ with safe mode set to [{safe_mode}]
             print("Error: Species ID Misconfigured.")
             exit(-1)
 
-        fn_2 += f'{f2_tagger_id}_'
-        fn_2 += f'{f2_record_id}_'
-        fn_2 += f'{f2_donor_name}'
-    
+        fn_2 += f"{f2_tagger_id}_"
+        fn_2 += f"{f2_record_id}_"
+        fn_2 += f"{f2_donor_name}"
+
         fn_2 += filename_1_extension.lower()
 
         return fn_2
+
+    def cleanup_raw_filenames_before_rename(self, fn: str):
+        return fn.replace("'", '')
 
     def validate_raw_filenames_before_rename(self, fn_parsed: list):
         """TODO"""
@@ -154,51 +161,79 @@ with safe mode set to [{safe_mode}]
 
     def extract_record_datetime_from_unformatted_file_name(self, fn_parsed: list):
         """TODO"""
-        dt_field_right_index = self.config_datetime_field_index
-        potential_dt_field = fn_parsed[dt_field_right_index]
+        # print('extracting!')
+        # print('fn_parsed', fn_parsed)
+        for potential_dt_field in fn_parsed:
+            # print(potential_dt_field)
+            try:
+                record_dt = datetime.strptime(potential_dt_field, "%Y%m%d")
+                return record_dt
 
-        if not bool(datetime.strptime(potential_dt_field, "%Y%m%d")):
-            raise ValueError("Filename Date Format Error: Must be in %y%m%d format.")
-
-        return datetime.strptime(potential_dt_field, "%Y%m%d")
+            except Exception:
+                pass
+        
+        raise ValueError("Filename Date Format Error: Could not find a valid date in %y%m%d format.")
+        
 
     def extract_codebook_ids_from_unformatted_file_name(self, fn_parsed: list):
         """TODO"""
         codebook_ids = []
 
+        codebook_common_names = []
+
+        dca_codebook_keyed_by_common_name = (
+            super().db_session.generate_dca_codebook_object()
+        )
+
         if self.config_codebook_field_index_setting == "first_four_words":
-            fn_codebook_id_1_common_name = (fn_parsed[0] + "_" + fn_parsed[1]).lower()
-            codebook_ids.append(fn_codebook_id_1_common_name)
-
+            potential_common_names = []
             
+            fn_codebook_id_1_common_name_1 = (fn_parsed[0] + "_" + fn_parsed[1]).lower()
+            fn_codebook_id_1_common_name_2 = (fn_parsed[0] + "_" + fn_parsed[1] + '_' + fn_parsed[2]).lower()
 
-   
+            potential_common_names.append(fn_codebook_id_1_common_name_1)
+            potential_common_names.append(fn_codebook_id_1_common_name_2)
+
+            if set(potential_common_names) & set(dca_codebook_keyed_by_common_name["species"]):
+                for potential_common_name in potential_common_names:
+                    if potential_common_name in dca_codebook_keyed_by_common_name["species"]:
+                        species_id = dca_codebook_keyed_by_common_name["species"][
+                            potential_common_name
+                        ].species_id
+
+                        codebook_ids.append(species_id)
+
+            else:
+                raise KeyError(
+                    f"Error: Codebook Common Name not found in dca codebook"
+                    f"Incorrect File: [{fn_parsed}]"
+                )
 
         # if self.config_species_field_setting == "first_four_words":
         #     filename_species_1_common_name = (fn_parsed[0] + "_" + fn_parsed[1]).lower()
         #     species_common_names.append(filename_species_1_common_name)
 
-            # if "and" in fn_parsed:
-            #     fn_parsed.remove("and")
-            #     filename_species_2_common_name = (
-            #         fn_parsed[2] + "_" + fn_parsed[3]
-            #     ).lower()
-            #     species_common_names.append(filename_species_2_common_name)
-                
-            # for species_common_name in species_common_names:
-            #     if species_common_name in self.hard_coded_species_common_name_dict:
-            #         species_id = self.hard_coded_species_common_name_dict[
-            #             species_common_name
-            #         ]["species_id"]
-            #         species_ids.append(species_id)
-            #     else:
-            #         raise KeyError(
-            #             f"Error: Species Common Name not found in species_dict"
-            #             f"Incorrect File: [{fn_parsed}]"
-            #         )
+        # if "and" in fn_parsed:
+        #     fn_parsed.remove("and")
+        #     filename_species_2_common_name = (
+        #         fn_parsed[2] + "_" + fn_parsed[3]
+        #     ).lower()
+        #     species_common_names.append(filename_species_2_common_name)
+
+        # for species_common_name in species_common_names:
+        #     if species_common_name in self.hard_coded_species_common_name_dict:
+        #         species_id = self.hard_coded_species_common_name_dict[
+        #             species_common_name
+        #         ]["species_id"]
+        #         species_ids.append(species_id)
+        #     else:
+        #         raise KeyError(
+        #             f"Error: Species Common Name not found in species_dict"
+        #             f"Incorrect File: [{fn_parsed}]"
+        #         )
 
         else:
             print("Error: Species config setting not specified.")
             sys.exit(-1)
 
-        return species_ids
+        return codebook_ids
