@@ -174,3 +174,7 @@ apps/filename_renamer_tool/config.yaml
 .vscode/settings.json
 middleware/middleware_config.yaml
 .pylintrc
+
+## custom 
+logs/
+unit_test.sh
