@@ -38,7 +38,8 @@ class DCADatabaseSession():
         stmt = select(Species)
 
         for species in self.__session.scalars(stmt):
-            dca_codebook['species'][species.common_name] = species
+            species_str = species.common_name.lower().replace(' ', '_').replace("'", '')
+            dca_codebook['species'][species_str] = species
 
         return dca_codebook
 
