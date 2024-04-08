@@ -17,14 +17,14 @@ class DatabaseUploadTool(DigitalCoralArkRecordBot):
             self.loc_id = fn_parsed[1]
             
             if fn_parsed[2] == "0000000":
-                self.species_id_1 = None
+                self.codebook_tag_1 = None
             else:
-                self.species_id_1 = fn_parsed[2]
+                self.codebook_tag_1 = fn_parsed[2]
             
             if fn_parsed[3] == "0000000":
-                self.species_id_2 = None
+                self.codebook_tag_2 = None
             else:
-                self.species_id_2 = fn_parsed[3]
+                self.codebook_tag_2 = fn_parsed[3]
             
             self.tagger_id = fn_parsed[4][3:5]
             self.id = fn_parsed[5]
@@ -75,7 +75,7 @@ class DatabaseUploadTool(DigitalCoralArkRecordBot):
         # validate species id
         species_dict = super().db_session.generate_species_dict_keyed_by_species_id()
 
-        for i in [record_abstract.species_id_1, record_abstract.species_id_2]:
+        for i in [record_abstract.codebook_tag_1, record_abstract.codebook_tag_2]:
             if i:
                 if i not in species_dict:
                     raise KeyError("Error! Species ID not in Species Table.")
@@ -90,8 +90,8 @@ class DatabaseUploadTool(DigitalCoralArkRecordBot):
             recorded_dt=record_abstract.dt,
             location_id=record_abstract.loc_id,
             donor_id=donor_id,
-            species_tag_1=record_abstract.species_id_1,
-            species_tag_2=record_abstract.species_id_2,
+            codebook_tag_1=record_abstract.codebook_tag_1,
+            codebook_tag_2=record_abstract.codebook_tag_2,
             uploaded_dt=uploaded_dt,
             tagger_id=record_abstract.tagger_id
         )
