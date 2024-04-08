@@ -48,8 +48,9 @@ class DigitalCoralArkRecordBot():
             filenames = []
             
             for filename in os.listdir(dir):
-                f = os.path.join(dir, filename)
-                if os.path.isfile(f):
-                    filenames.append(filename)
+                if not filename.startswith('.'):
+                    f = os.path.join(dir, filename)
+                    if os.path.isfile(f):
+                        filenames.append(filename)
 
             return filenames

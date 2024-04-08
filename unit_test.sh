@@ -7,11 +7,11 @@ eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 pyenv activate dca_dev
 
-echo "Step 1. Wiping Database and output files..."
-psql -U rylanlorance -d dca_dev_working -c 'TRUNCATE dca.record;'
-echo "Done."
-rm -rf /Users/rylanlorance/Documents/Dear_Ocean/Dear_Ocean_Digital_Coral_Ark_Bot_Working/output_files/*
-rm -rf /Users/rylanlorance/Documents/Dear_Ocean/Dear_Ocean_Digital_Coral_Ark_Bot_Working/input/input_files_cleaned_demo_01_08_23/*
+# echo "Step 1. Wiping Database and output files..."
+# psql -U rylanlorance -d dca_dev_working -c 'TRUNCATE dca.record;'
+# echo "Done."
+# rm -rf /Users/rylanlorance/Documents/Dear_Ocean/Dear_Ocean_Digital_Coral_Ark_Bot_Working/output_files/*
+# rm -rf /Users/rylanlorance/Documents/Dear_Ocean/Dear_Ocean_Digital_Coral_Ark_Bot_Working/input/input_files_cleaned_demo_01_08_23/*
 
 INPUT_DIR="/Users/rylanlorance/Documents/Dear_Ocean/Dear_Ocean_Digital_Coral_Ark_Bot_Working/input/input_files_demo_01_08_23/"
 OUTPUT_DIR="/Users/rylanlorance/Documents/Dear_Ocean/Dear_Ocean_Digital_Coral_Ark_Bot_Working/output_files"

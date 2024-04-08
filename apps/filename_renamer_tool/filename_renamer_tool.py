@@ -7,10 +7,18 @@ import pathlib
 import re
 import shutil
 import sys
+from time import clock_getres
 import yaml
 
 from dca_record_bot import DigitalCoralArkRecordBot
 
+# some of the common names are unknown, so we skip them.
+known_unknown_common_names = [
+    ["Ladyfish", "or"],
+    ["Bonefish", "‘ō’io"],
+    ["Bonefish", 'ʻŌʻio'],
+    ["Baby", "Sergeants"]
+]
 
 class FileRenameTool(DigitalCoralArkRecordBot):
     """TODO"""
@@ -70,6 +78,13 @@ with safe mode set to [{safe_mode}]
                             print(f"Evaluating [{filename_1}]...")
                             filename_1 = self.cleanup_raw_filenames_before_rename(filename_1)
                             f_1_parsed = re.split(r"\s|_|\.+", filename_1)
+                            
+                            if self.is_codebook_common_name_known_unknown(f_1_parsed):
+                                print("Common name is considered 'known unknown', skipping... ")
+                                print("\u2713")
+
+                                continue
+                            
                             self.validate_raw_filenames_before_rename(f_1_parsed)
 
                             record_dt = (
@@ -100,7 +115,7 @@ with safe mode set to [{safe_mode}]
 
                                 shutil.copyfile(f_1, f_2)
 
-                                ctr += 1
+                            ctr += 1
 
                 except Exception as e:
                     print("Error: File not valid for Filename Renamer Tool.")
@@ -149,6 +164,16 @@ with safe mode set to [{safe_mode}]
 
     def cleanup_raw_filenames_before_rename(self, fn: str):
         return fn.replace("'", '')
+
+    def is_codebook_common_name_known_unknown(self, fn_1_parsed: list):
+        search_subset = fn_1_parsed[0:2]
+        print(search_subset)
+
+        if search_subset in known_unknown_common_names:
+            return True
+        else:
+            return False
+
 
     def validate_raw_filenames_before_rename(self, fn_parsed: list):
         """TODO"""

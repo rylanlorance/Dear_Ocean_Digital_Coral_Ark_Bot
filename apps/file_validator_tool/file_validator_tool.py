@@ -64,7 +64,7 @@ validating [{num_files}] files."""
         file_name_excluding_donor_id = file_name_parsed[:-3]
         total_chars_in_filename_excluding_donor_id =  sum([len(i) for i in file_name_excluding_donor_id])
 
-        if total_chars_in_filename_excluding_donor_id != 39:
+        if total_chars_in_filename_excluding_donor_id != 38:
             raise ValueError("Filename format error: [{}]. Aggregate length wrong. ")
   
         fn_dt = file_name_parsed[0]
