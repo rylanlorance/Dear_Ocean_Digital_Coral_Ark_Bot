@@ -78,7 +78,10 @@ with safe mode set to [{safe_mode}]
                             print(f"Evaluating [{filename_1}]...")
                             filename_1 = self.cleanup_raw_filenames_before_rename(filename_1)
                             f_1_parsed = re.split(r"\s|_|\.+", filename_1)
-                            
+
+                            if ('' in f_1_parsed):
+                                f_1_parsed.remove('')
+
                             if self.is_codebook_common_name_known_unknown(f_1_parsed):
                                 print("Common name is considered 'known unknown', skipping... ")
                                 print("\u2713")
@@ -210,55 +213,60 @@ with safe mode set to [{safe_mode}]
             super().db_session.generate_dca_codebook_object()
         )
 
-        if self.config_codebook_field_index_setting == "first_four_words":
-            potential_common_names = []
+        print(fn_parsed)
+        if self.config_codebook_field_index_setting == "first_five_words":
+            potential_common_names_common_name_1 = []
             
+            ## add codebook id 1
             fn_codebook_id_1_common_name_1 = (fn_parsed[0] + "_" + fn_parsed[1]).lower()
             fn_codebook_id_1_common_name_2 = (fn_parsed[0] + "_" + fn_parsed[1] + '_' + fn_parsed[2]).lower()
+            
+            potential_common_names_common_name_1.append(fn_codebook_id_1_common_name_1)
+            potential_common_names_common_name_1.append(fn_codebook_id_1_common_name_2)
 
-            potential_common_names.append(fn_codebook_id_1_common_name_1)
-            potential_common_names.append(fn_codebook_id_1_common_name_2)
-
-            if set(potential_common_names) & set(dca_codebook_keyed_by_common_name["species"]):
-                for potential_common_name in potential_common_names:
+            if set(potential_common_names_common_name_1) & set(dca_codebook_keyed_by_common_name["species"]):
+                for potential_common_name in potential_common_names_common_name_1:
                     if potential_common_name in dca_codebook_keyed_by_common_name["species"]:
                         species_id = dca_codebook_keyed_by_common_name["species"][
                             potential_common_name
                         ].species_id
 
                         codebook_ids.append(species_id)
-
             else:
                 raise KeyError(
                     f"Error: Codebook Common Name not found in dca codebook"
                     f"Incorrect File: [{fn_parsed}]"
                 )
+            
+            ## add codebook id 2
+            if ('and' in fn_parsed):
+                print('we have two codebook ids')
+                potential_common_names_common_name_2 = []
 
-        # if self.config_species_field_setting == "first_four_words":
-        #     filename_species_1_common_name = (fn_parsed[0] + "_" + fn_parsed[1]).lower()
-        #     species_common_names.append(filename_species_1_common_name)
+                fn_codebook_id_2_potential_common_name_1 = (fn_parsed[3] + "_" + fn_parsed[4]).lower()
+                fn_codebook_id_2_potential_common_name_2 = (fn_parsed[4] + "_" + fn_parsed[5]).lower()
+                fn_codebook_id_2_potential_common_name_3 = (fn_parsed[3] + "_" + fn_parsed[4] + '_' + fn_parsed[5]).lower()
 
-        # if "and" in fn_parsed:
-        #     fn_parsed.remove("and")
-        #     filename_species_2_common_name = (
-        #         fn_parsed[2] + "_" + fn_parsed[3]
-        #     ).lower()
-        #     species_common_names.append(filename_species_2_common_name)
 
-        # for species_common_name in species_common_names:
-        #     if species_common_name in self.hard_coded_species_common_name_dict:
-        #         species_id = self.hard_coded_species_common_name_dict[
-        #             species_common_name
-        #         ]["species_id"]
-        #         species_ids.append(species_id)
-        #     else:
-        #         raise KeyError(
-        #             f"Error: Species Common Name not found in species_dict"
-        #             f"Incorrect File: [{fn_parsed}]"
-        #         )
+                potential_common_names_common_name_2.append(fn_codebook_id_2_potential_common_name_1)
+                potential_common_names_common_name_2.append(fn_codebook_id_2_potential_common_name_2)
+                potential_common_names_common_name_2.append(fn_codebook_id_2_potential_common_name_3)
+
+                if set(potential_common_names_common_name_2) & set(dca_codebook_keyed_by_common_name["species"]):
+                    for potential_common_name in potential_common_names_common_name_2:
+                        if potential_common_name in dca_codebook_keyed_by_common_name["species"]:
+                            species_id = dca_codebook_keyed_by_common_name["species"][
+                                potential_common_name
+                            ].species_id
+
+                            codebook_ids.append(species_id)        
+
+
+
 
         else:
             print("Error: Species config setting not specified.")
             sys.exit(-1)
 
+        print(codebook_ids)
         return codebook_ids
