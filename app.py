@@ -13,7 +13,6 @@ import argparse
 # # from dak_archive_bot.dak_archive_bot import DigitalArkArchiveBot
 
 
-
 def cmd_rename_files(args):
     file_rename_tool = FileRenameTool(
         input_dir=args.input_dir, output_dir=args.output_dir
