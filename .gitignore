@@ -168,11 +168,9 @@ cython_debug/
 # src/dcc_record_bot/apps/filename_renamer_tool/filename_renamer_tool.yaml
 # src/dcc_record_bot/middleware/middleware_config.yaml
 .python-version
-apps/filename_renamer_tool/config.yaml
 .vscode/
 .vscode/settings.json
 .vscode/settings.json
-middleware/middleware_config.yaml
 .pylintrc
 
 ## custom 

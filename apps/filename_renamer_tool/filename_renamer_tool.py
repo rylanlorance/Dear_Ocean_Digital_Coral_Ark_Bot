@@ -45,7 +45,6 @@ class FileRenameTool(DigitalCoralArkRecordBot):
         self.default_donor_info = config["donor_info"]
         self.default_record_tagger_id = config["tagger_id"]
 
-        self.config_datetime_field_index = config["datetime_field_index"]
         self.config_codebook_field_index_setting = config[
             "codebook_field_index_setting"
         ]

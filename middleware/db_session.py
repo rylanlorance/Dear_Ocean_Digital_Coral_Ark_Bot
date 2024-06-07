@@ -15,7 +15,7 @@ class DCADatabaseSession():
     def __init__(self) -> None:
         with open('./middleware/middleware_config.yaml') as f1:
             config = yaml.safe_load(f1)
-
+            
             self.__db_host = config['DB_HOST']
             self.__db_user_id = config['DB_USER_ID']
             self.__db_password = config['DB_PASSWORD']

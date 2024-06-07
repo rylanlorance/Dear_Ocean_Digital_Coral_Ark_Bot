@@ -1,0 +1,5 @@
+starting_image_id: 0
+location_id: "HAN"
+donor_info: "Roberts_A"
+tagger_id: "BG"
+codebook_field_index_setting: "first_five_words"
