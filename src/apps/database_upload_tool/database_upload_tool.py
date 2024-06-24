@@ -1,5 +1,5 @@
 import sqlalchemy
-from dca_record_bot import DigitalCoralArkRecordBot
+from .dca_record_bot import DigitalCoralArkRecordBot
 from sqlalchemy import exc
 
 from datetime import datetime

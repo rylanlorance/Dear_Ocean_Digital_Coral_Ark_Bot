@@ -3,7 +3,7 @@ import os
 import datetime
 import re
 
-from dca_record_bot import DigitalCoralArkRecordBot
+from src.apps.database_upload_tool.dca_record_bot import DigitalCoralArkRecordBot
 
 class FilenameValidatorTool(DigitalCoralArkRecordBot):
     """I validate the filename format of input records. This typically happens before 

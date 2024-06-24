@@ -10,7 +10,7 @@ import sys
 from time import clock_getres
 import yaml
 
-from dca_record_bot import DigitalCoralArkRecordBot
+from src.apps.database_upload_tool.dca_record_bot import DigitalCoralArkRecordBot
 
 # some of the common names are unknown, so we skip them.
 known_unknown_common_names = [

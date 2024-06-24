@@ -13,7 +13,7 @@ import yaml
 
 class DCADatabaseSession():
     def __init__(self) -> None:
-        with open('./middleware/middleware_config.yaml') as f1:
+        with open('src/middleware/db_session.py') as f1:
             config = yaml.safe_load(f1)
             
             self.__db_host = config['DB_HOST']
