@@ -10,7 +10,8 @@ import sys
 from time import clock_getres
 import yaml
 
-from src.apps.database_upload_tool.dca_record_bot import DigitalCoralArkRecordBot
+from apps.database_upload_tool.dca_record_bot import DigitalCoralArkRecordBot
+
 
 # some of the common names are unknown, so we skip them.
 known_unknown_common_names = [
@@ -30,7 +31,7 @@ class FileRenameTool(DigitalCoralArkRecordBot):
         self.input_dir = input_dir
         self.output_dir = output_dir
 
-        config_relative_path = "./apps/filename_renamer_tool/config.yaml"
+        config_relative_path = "./src/apps/filename_renamer_tool/config.yaml"
 
         if not os.path.isfile(config_relative_path):
             print("config.yaml not found.")

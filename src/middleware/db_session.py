@@ -13,22 +13,33 @@ import yaml
 
 class DCADatabaseSession():
     def __init__(self) -> None:
-        with open('src/middleware/db_session.py') as f1:
+        with open('src/middleware/middleware_config.yaml') as f1:
             config = yaml.safe_load(f1)
-            
+
             self.__db_host = config['DB_HOST']
             self.__db_user_id = config['DB_USER_ID']
             self.__db_password = config['DB_PASSWORD']
-
+            self.__port = config['PORT']
         url = (
             f'postgresql://{self.__db_user_id}:'
             f'{self.__db_password}'
-            f'@{self.__db_host}/dca_dev_working'
+            f'@{self.__db_host},{self.__port}/dca_dev_working'
         )
         
-        engine = create_engine(url)   
+        self.engine = create_engine(url)   
 
-        self.__session = Session(engine)
+        self.__session = Session(self.engine)
+
+    def test_db_connection(self):
+        try:
+            conn = self.engine.connect()
+            conn.close()
+            print('db connection working')
+
+        except Exception as e:
+            print('Error! Database connection not working.')
+
+
 
     def generate_dca_codebook_object(self):
         dca_codebook = {
@@ -53,7 +64,7 @@ class DCADatabaseSession():
 
         return species_dict
     
-    def retreive_donor_id_by_last_name(self, lastname: str):
+    def retrieve_donor_id_by_last_name(self, lastname: str):
         """Queries donor table based on last name"""
 
         stmt = Select(Donor).where(Donor.last_name==lastname)

@@ -1,3 +1,5 @@
+---
 DB_HOST: localhost
 DB_USER_ID: rylanlorance
-DB_PASSWORD: 
+DB_PASSWORD: ""
+PORT: "3306"

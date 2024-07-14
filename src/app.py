@@ -1,7 +1,8 @@
 import os
+from re import sub
 from apps.database_upload_tool.database_upload_tool import DatabaseUploadTool
 from apps.file_validator_tool.file_validator_tool import FilenameValidatorTool
-
+from apps.connection_test_tool.test_connector import DatabaseTestTool
 from apps.filename_renamer_tool.filename_renamer_tool import FileRenameTool
 import config
 
@@ -11,6 +12,11 @@ import argparse
 # from src.dcc_ record_bot.apps.filename_renamer_tool.filename_renamer_tool import DigitalCoralArkFileRenamerTool
 # # from file_rename_bot.file_rename_bot import FileRenameBot
 # # from dak_archive_bot.dak_archive_bot import DigitalArkArchiveBot
+
+def cmd_test_connection(args):
+    print("let's check the remote connection")
+    test_connection_tool = DatabaseTestTool()
+    test_connection_tool.test_db_connection()
 
 
 def cmd_rename_files(args):
@@ -59,6 +65,12 @@ parser_upload_files = subparsers.add_parser(
 parser_upload_files.add_argument("input_dir", type=str)
 parser_upload_files.add_argument('--safe-mode', type=str, default="on")
 parser_upload_files.set_defaults(func=cmd_upload_files)
+
+parser_test_dbconnection = subparsers.add_parser(
+    "test_db", help="Tool used to test the connection to the remote database."
+)
+parser_test_dbconnection.add_argument('--db-name')
+parser_test_dbconnection.set_defaults(func=cmd_test_connection)
 
 args = parser.parse_args()
 args.func(args)
