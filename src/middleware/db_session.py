@@ -23,7 +23,7 @@ class DCADatabaseSession():
         url = (
             f'postgresql://{self.__db_user_id}:'
             f'{self.__db_password}'
-            f'@{self.__db_host},{self.__port}/dca_dev_working'
+            f'@{self.__db_host},{self.__port}/dca'
         )
         
         self.engine = create_engine(url)   
