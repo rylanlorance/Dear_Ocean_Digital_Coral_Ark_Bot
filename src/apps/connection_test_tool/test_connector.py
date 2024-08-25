@@ -1,8 +1,5 @@
 
-
-
 from middleware.db_session import DCADatabaseSession
-
 
 class DatabaseTestTool(DCADatabaseSession):
     def __init__(self):

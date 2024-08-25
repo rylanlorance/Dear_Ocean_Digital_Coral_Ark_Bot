@@ -3,6 +3,7 @@ from sqlalchemy import Select, create_engine
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import MultipleResultsFound
+from sqlalchemy import URL
 
 from middleware.models.donor import Donor
 
@@ -20,13 +21,17 @@ class DCADatabaseSession():
             self.__db_user_id = config['DB_USER_ID']
             self.__db_password = config['DB_PASSWORD']
             self.__port = config['PORT']
-        url = (
-            f'postgresql://{self.__db_user_id}:'
-            f'{self.__db_password}'
-            f'@{self.__db_host},{self.__port}/dca'
-        )
-        
-        self.engine = create_engine(url)   
+
+        url_object = URL.create(
+            "postgresql",
+            username=self.__db_user_id,
+            password=self.__db_password,
+            port=self.__port,
+            host=self.__db_host,
+            database="dca",
+        )    
+
+        self.engine = create_engine(url_object)   
 
         self.__session = Session(self.engine)
 

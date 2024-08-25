@@ -1,5 +1,5 @@
 ---
-DB_HOST: localhost
-DB_USER_ID: rylanlorance
-DB_PASSWORD: ""
-PORT: "3306"
+DB_HOST: "localhost"
+DB_USER_ID: "dca-reader"
+DB_PASSWORD: "#Darwin1835"
+PORT: "3307"
